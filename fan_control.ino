@@ -1,20 +1,17 @@
 #include "MeanFilter.h"
-#include "PID.h"
-
+#include "ThermalController.h"
 // 硬件定义
 const int pwmPin = 5;
 const int tachPin = 2;
 const int thermistorPin = 23;
 
-// 全局变量
 volatile unsigned long pulseCount = 0;
 unsigned long lastTime = 0;
 float rpm = 0;
-int pwmValue = 50;  // 初始占空比设为最低有效值
-float targetTemp = 28.0;  // 初始目标温度
-
+int pwmValue = 50;
 MeanFilter fanRPMFilter(10);
-PID myPID(15.0, 2.0, 1.0, targetTemp, 50, 255);  // PID参数需要根据实际系统调整
+MeanFilter tempFilter(5);  // 温度滤波器
+ThermalController thermalController;
 
 void setup() {
     pinMode(pwmPin, OUTPUT);
@@ -28,20 +25,21 @@ void loop() {
     static unsigned long lastPIDTime = 0;
     unsigned long currentTime = millis();
 
-    // PID控制周期（200ms）
-    if (currentTime - lastPIDTime >= 200) {
-        float currentTemp = readTemp();
-        pwmValue = myPID.compute(currentTemp);
-        analogWrite(pwmPin, pwmValue);
-        lastPIDTime = currentTime;
-    }
-
+    analogWrite(pwmPin, pwmValue);
+      
     // 转速计算和打印周期（1s）
     if (currentTime - lastTime >= 1000) {
         rpm = (pulseCount / 2.0) * 60.0;
         fanRPMFilter.addValue(rpm);
         pulseCount = 0;
-        
+         // 温度读取和滤波
+        tempFilter.addValue(readTemp());
+        float currentTemp = tempFilter.getAverage();
+         // 计算PWM值并约束范围
+         pwmValue = thermalController.computePWM(currentTemp);
+         pwmValue = constrain(pwmValue, 0, 255);
+         analogWrite(pwmPin, pwmValue);
+
         Serial.print("Temp: ");
         Serial.print(readTemp());
         Serial.print("°C | RPM: ");
