@@ -7,8 +7,11 @@ class MeanFilter : public Printable {
 public:
     MeanFilter(int size);
     ~MeanFilter();
-    float addValue(float value);
-    virtual size_t printTo(Print& p) const override;  // 实现 Printable 接口
+    
+    void addValue(float value);         // 添加新值时直接返回平均值
+    void reset();
+    float getAverage() const;           // 核心计算方法
+    virtual size_t printTo(Print& p) const override;
 
 private:
     float* buffer;
