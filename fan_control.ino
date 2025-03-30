@@ -1,6 +1,6 @@
 #include "MeanFilter.h"
 #include "ThermalController.h"
-// 硬件定义
+// Hardware definitions
 const int pwmPin = 5;
 const int tachPin = 2;
 const int thermistorPin = 23;
@@ -10,7 +10,7 @@ unsigned long lastTime = 0;
 float rpm = 0;
 int pwmValue = 50;
 MeanFilter fanRPMFilter(10);
-MeanFilter tempFilter(5);  // 温度滤波器
+MeanFilter tempFilter(5);  // Temperature filter
 ThermalController thermalController;
 
 void setup() {
@@ -18,7 +18,7 @@ void setup() {
     pinMode(tachPin, INPUT);
     attachInterrupt(digitalPinToInterrupt(tachPin), countPulse, FALLING);
     Serial.begin(9600);
-    analogWrite(pwmPin, pwmValue);  // 初始化PWM输出
+    analogWrite(pwmPin, pwmValue);  // Initialize PWM output
 }
 
 void loop() {
@@ -27,15 +27,15 @@ void loop() {
 
     analogWrite(pwmPin, pwmValue);
       
-    // 转速计算和打印周期（1s）
+    // RPM calculation and print period (1s)
     if (currentTime - lastTime >= 1000) {
         rpm = (pulseCount / 2.0) * 60.0;
         fanRPMFilter.addValue(rpm);
         pulseCount = 0;
-         // 温度读取和滤波
+         // Temperature reading and filtering
         tempFilter.addValue(readTemp());
         float currentTemp = tempFilter.getAverage();
-         // 计算PWM值并约束范围
+         // Calculate PWM value and constrain range
          pwmValue = thermalController.computePWM(currentTemp);
          pwmValue = constrain(pwmValue, 0, 255);
          analogWrite(pwmPin, pwmValue);
@@ -51,10 +51,10 @@ void loop() {
     }
 }
 
-// 中断服务函数
+// Interrupt service function
 void countPulse() { pulseCount++; }
 
-// 温度读取函数
+// Temperature reading function
 float readTemp() {
     int tempReading = analogRead(thermistorPin);
     double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
