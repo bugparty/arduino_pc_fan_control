@@ -22,24 +22,24 @@ public:
         unsigned long now = millis();
         float dt = (now - lastTime) / 1000.0f;
         
-        if (dt <= 0 || dt > 1.0f) {  // 过滤异常时间值
+        if (dt <= 0 || dt > 1.0f) {  // Filter abnormal time values
             dt = 0.1f;
         }
 
-        float error = input - setpoint;  // 正向控制：温度越高输出越大
+        float error = input - setpoint;  // Forward control: higher temperature leads to greater output
         float newIntegral = integral + error * dt;
         float derivative = (error - prevError) / dt;
 
-        // 计算未限制的输出
+        // Calculate unlimited output
         float output = Kp * error + Ki * newIntegral + Kd * derivative;
 
-        // 抗积分饱和处理
+        // Anti-windup handling
         if (output > outputMax) {
             output = outputMax;
         } else if (output < outputMin) {
             output = outputMin;
         } else {
-            integral = newIntegral;  // 只有输出未饱和时才更新积分
+            integral = newIntegral;  // Only update integral when output is not saturated
         }
 
         prevError = error;

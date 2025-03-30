@@ -25,11 +25,11 @@ float MeanFilter::getAverage() const {
     
     float sum = 0;
     for(int i = 0; i < count; i++) {
-        sum += buffer[(index - count + i + size) % size];  // 正确访问环形缓冲区
+        sum += buffer[(index - count + i + size) % size];  // Correctly access circular buffer
     }
     return sum / count;
 }
 
 size_t MeanFilter::printTo(Print& p) const {
-    return p.print(getAverage());  // 复用核心方法
+    return p.print(getAverage());  // Reuse core method
 }
