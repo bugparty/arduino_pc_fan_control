@@ -21,7 +21,6 @@ A sophisticated fan control system built with Arduino that provides precise temp
 - Temperature sensor
 - 4-pin PWM PC fan
 - Power supply (appropriate for your fan's requirements)
-- Optional: Display for monitoring (if implemented)
 
 ## Pin Connections
 
