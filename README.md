@@ -2,6 +2,9 @@
 
 A sophisticated fan control system built with Arduino that provides precise temperature control through either PID control or custom fan curves. This project is perfect for cooling applications where maintaining a specific temperature is crucial.
 
+<img width="466" alt="image" src="https://github.com/user-attachments/assets/6c54c45e-81b6-4150-9def-03259e5f4fd5" />
+
+
 ## Features
 
 - Temperature monitoring using a temperature sensor
